@@ -83,31 +83,36 @@ const gameController = (() => {
     }
     function playRound(position) {
         if (!gameStarted) {
-            return
+            return null;
         }
+
         if (gameBoard.getBoard()[position] !== "") {
-            console.log("This cell is already taken.");
-            return;
+            return null;
         }
 
         gameBoard.setMark(currentPlayer.marker, position);
 
-        displayController.renderBoard();
+        const playedMarker = currentPlayer.marker;
 
         if (gameBoard.checkWinner(currentPlayer.marker)) {
             displayController.showWinner(currentPlayer.name);
-            return;
+            gameStarted = false;
+            return playedMarker;
         }
 
         if (gameBoard.getBoard().every((cell) => cell !== "")) {
-            displayController.showTie()
-            return;
+            displayController.showTie();
+            gameStarted = false;
+            return playedMarker;
         }
 
         currentPlayer = currentPlayer === player1
             ? player2
             : player1;
+
         displayController.showMessage(`${currentPlayer.name}'s turn`);
+
+        return playedMarker;
     }
 
     function resetGame() {
@@ -145,39 +150,35 @@ const displayController = (() => {
     function renderBoard() {
         gameField.innerHTML = ""
 
-        const board = gameBoard.getBoard();
-
         for (let i = 0; i < 9; i++) {
             const cell = document.createElement("div");
 
             cell.dataset.index = i;
-            cell.textContent = board[i]
-
-            if (board[i] === "X") {
-                cell.innerHTML = `
-        <svg class="mark x" viewBox="0 0 100 100">
-            <path d="M 18 18 L 82 82"></path>
-            <path d="M 82 18 L 18 82"></path>
-        </svg>
-    `;
-            } else if (board[i] === "O") {
-                cell.innerHTML = `
-        <svg class="mark o" viewBox="0 0 100 100">
-            <path d="
-                M 50 10
-                C 73 10, 90 27, 90 50
-                C 90 73, 73 90, 50 90
-                C 27 90, 10 73, 10 50
-                C 10 27, 27 10, 50 10
-            "></path>
-        </svg>
-    `;
-            }
 
             cell.addEventListener("click", () => {
                 const position = cell.dataset.index;
-                gameController.playRound(position);
+                const marker = gameController.playRound(position);
 
+                if (marker === "X") {
+                    cell.innerHTML = `
+            <svg class="mark x" viewBox="0 0 100 100">
+                <path d="M 18 18 L 82 82"></path>
+                <path d="M 82 18 L 18 82"></path>
+            </svg>
+        `;
+                } else if (marker === "O") {
+                    cell.innerHTML = `
+            <svg class="mark o" viewBox="0 0 100 100">
+                <path d="
+                    M 50 10
+                    C 73 10, 90 27, 90 50
+                    C 90 73, 73 90, 50 90
+                    C 27 90, 10 73, 10 50
+                    C 10 27, 27 10, 50 10
+                "></path>
+            </svg>
+        `;
+                }
             });
 
             gameField.appendChild(cell);
