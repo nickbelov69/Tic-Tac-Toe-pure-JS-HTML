@@ -79,6 +79,7 @@ const gameController = (() => {
         gameBoard.resetBoard()
         displayController.renderBoard()
         displayController.showMessage(`${currentPlayer.name}'s turn`)
+
     }
     function playRound(position) {
         if (!gameStarted) {
@@ -106,6 +107,7 @@ const gameController = (() => {
         currentPlayer = currentPlayer === player1
             ? player2
             : player1;
+        displayController.showMessage(`${currentPlayer.name}'s turn`);
     }
 
     function resetGame() {
@@ -150,6 +152,27 @@ const displayController = (() => {
 
             cell.dataset.index = i;
             cell.textContent = board[i]
+
+            if (board[i] === "X") {
+                cell.innerHTML = `
+        <svg class="mark x" viewBox="0 0 100 100">
+            <path d="M 18 18 L 82 82"></path>
+            <path d="M 82 18 L 18 82"></path>
+        </svg>
+    `;
+            } else if (board[i] === "O") {
+                cell.innerHTML = `
+        <svg class="mark o" viewBox="0 0 100 100">
+            <path d="
+                M 50 10
+                C 73 10, 90 27, 90 50
+                C 90 73, 73 90, 50 90
+                C 27 90, 10 73, 10 50
+                C 10 27, 27 10, 50 10
+            "></path>
+        </svg>
+    `;
+            }
 
             cell.addEventListener("click", () => {
                 const position = cell.dataset.index;
