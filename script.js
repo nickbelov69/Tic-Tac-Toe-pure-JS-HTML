@@ -1,6 +1,3 @@
-
-
-
 const gameBoard = (() => {
     const gameField = new Array(9).fill("");
 
@@ -14,8 +11,6 @@ const gameBoard = (() => {
         [0, 4, 8],
         [2, 4, 6],
     ];
-
-
 
     function setMark(marker, position) {
         if (gameField[position] === "") {
@@ -59,28 +54,43 @@ const gameController = (() => {
 
     let player1;
     let player2;
-
     let currentPlayer;
 
-    function startGame () {
-        const firstPlayerName = document.getElementById("first-player").value.trim();
-        const secondPlayerName = document.getElementById("second-player").value.trim();
+    function startGame() {
+        const firstPlayerName = document
+            .getElementById("first-player")
+            .value
+            .trim();
+
+        const secondPlayerName = document
+            .getElementById("second-player")
+            .value
+            .trim();
 
         if (firstPlayerName === "" || secondPlayerName === "") {
-        displayController.showMessage("ENTER NAMES YOU DUMMY(KINDLY ♥️")
-            return
+            displayController.showMessage("ENTER NAMES YOU DUMMY (KINDLY ♥️");
+            return;
         }
+
         player1 = createPlayer(firstPlayerName, "O");
         player2 = createPlayer(secondPlayerName, "X");
 
         currentPlayer = player1;
         gameStarted = true;
 
-        gameBoard.resetBoard()
-        displayController.renderBoard()
-        displayController.showMessage(`${currentPlayer.name}'s turn`)
-
+        gameBoard.resetBoard();
+        displayController.renderBoard();
+        displayController.showMessage(`${currentPlayer.name}'s turn`);
     }
+
+    function switchPlayer() {
+        currentPlayer = currentPlayer === player1
+            ? player2
+            : player1;
+
+        displayController.showMessage(`${currentPlayer.name}'s turn`);
+    }
+
     function playRound(position) {
         if (!gameStarted) {
             return null;
@@ -100,38 +110,39 @@ const gameController = (() => {
             return playedMarker;
         }
 
-        if (gameBoard.getBoard().every((cell) => cell !== "")) {
-            displayController.showTie();
+        const board = gameBoard.getBoard();
+
+        if (board.every((cell) => cell !== "")) {
             gameStarted = false;
+            displayController.showTie();
             return playedMarker;
         }
 
-        currentPlayer = currentPlayer === player1
-            ? player2
-            : player1;
-
-        displayController.showMessage(`${currentPlayer.name}'s turn`);
+        switchPlayer();
 
         return playedMarker;
     }
 
     function resetGame() {
-        if (!gameStarted) {
+        if (!player1 || !player2) {
             return;
         }
 
         gameBoard.resetBoard();
         currentPlayer = player1;
-        displayController.renderBoard()
+        gameStarted = true;
+
+        displayController.renderBoard();
         displayController.showMessage(`${currentPlayer.name}'s turn`);
     }
 
     return {
         playRound,
         resetGame,
-        startGame,
+        startGame
     };
 })();
+
 
 const displayController = (() => {
     const startButton = document.getElementById("start-button");
@@ -139,16 +150,16 @@ const displayController = (() => {
     const gameField = document.getElementById("game-field");
     const gameMessage = document.getElementById("game-message");
 
-    restartButton.addEventListener("click", () => {
-        gameController.resetGame();
-    })
-
     startButton.addEventListener("click", () => {
         gameController.startGame();
-    })
+    });
+
+    restartButton.addEventListener("click", () => {
+        gameController.resetGame();
+    });
 
     function renderBoard() {
-        gameField.innerHTML = ""
+        gameField.innerHTML = "";
 
         for (let i = 0; i < 9; i++) {
             const cell = document.createElement("div");
@@ -161,23 +172,23 @@ const displayController = (() => {
 
                 if (marker === "X") {
                     cell.innerHTML = `
-            <svg class="mark x" viewBox="0 0 100 100">
-                <path d="M 18 18 L 82 82"></path>
-                <path d="M 82 18 L 18 82"></path>
-            </svg>
-        `;
+                        <svg class="mark x" viewBox="0 0 100 100">
+                            <path d="M 18 18 L 82 82"></path>
+                            <path d="M 82 18 L 18 82"></path>
+                        </svg>
+                    `;
                 } else if (marker === "O") {
                     cell.innerHTML = `
-            <svg class="mark o" viewBox="0 0 100 100">
-                <path d="
-                    M 50 10
-                    C 73 10, 90 27, 90 50
-                    C 90 73, 73 90, 50 90
-                    C 27 90, 10 73, 10 50
-                    C 10 27, 27 10, 50 10
-                "></path>
-            </svg>
-        `;
+                        <svg class="mark o" viewBox="0 0 100 100">
+                            <path d="
+                                M 50 10
+                                C 73 10, 90 27, 90 50
+                                C 90 73, 73 90, 50 90
+                                C 27 90, 10 73, 10 50
+                                C 10 27, 27 10, 50 10
+                            "></path>
+                        </svg>
+                    `;
                 }
             });
 
@@ -185,15 +196,15 @@ const displayController = (() => {
         }
     }
 
-    function showWinner (name) {
-        gameMessage.textContent = `We have a winner: ${name}`
+    function showWinner(name) {
+        gameMessage.textContent = `We have a winner: ${name}`;
     }
 
-    function showTie () {
-        gameMessage.textContent = "OOPS IT'S A TIE MUTHERFUCKA"
+    function showTie() {
+        gameMessage.textContent = "OOPS IT'S A TIE MUTHERFUCKA";
     }
 
-    function showMessage (message) {
+    function showMessage(message) {
         gameMessage.textContent = message;
     }
 
@@ -206,4 +217,3 @@ const displayController = (() => {
 })();
 
 displayController.renderBoard();
-
