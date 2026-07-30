@@ -1,1 +1,20 @@
-const
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+#game-field {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+}
+
+#game-field div {
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+
+}
